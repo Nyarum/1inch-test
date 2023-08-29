@@ -60,8 +60,8 @@ func main() {
 
 	pairAddr, err := uniswapV2Factory.GetPair(
 		&bind.CallOpts{},
-		common.HexToAddress(*inputToken),  // DAI
-		common.HexToAddress(*outputToken), // WETH
+		common.HexToAddress(*inputToken),  // WETH
+		common.HexToAddress(*outputToken), // USDT
 	)
 	if err != nil {
 		log.Fatal(err)
