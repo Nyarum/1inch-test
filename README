@@ -1,0 +1,7 @@
+
+The tool estimate price in pair from uniswap based on router 02 and factory contracts
+
+Use this by arguments:
+- go run main.go --input-amount=1
+
+Also you can configure router 02 and factory addr of uniswap
