@@ -34,20 +34,20 @@ func etherToWei(eth *big.Float) *big.Int {
 }
 
 // getAmountOut reimplements math from uniswap contract
-func getAmountOut(inputAmount int, reserve0, reserve1 *big.Int) *big.Float {
-	amountInWithFee := inputAmount * 997
-	numerator := new(big.Int).Mul(big.NewInt(int64(amountInWithFee)), reserve1)
-	preDenominator := new(big.Int).Mul(reserve0, big.NewInt(1000))
-	denominator := new(big.Int).Add(preDenominator, big.NewInt(int64(amountInWithFee)))
+func getAmountOut(inputAmount *big.Float, reserve0, reserve1 *big.Int) *big.Float {
+	amountInWithFee := new(big.Float).Mul(inputAmount, big.NewFloat(997))
+	numerator := new(big.Float).Mul(amountInWithFee, new(big.Float).SetInt(reserve1))
+	preDenominator := new(big.Float).Mul(new(big.Float).SetInt(reserve0), big.NewFloat(1000))
+	denominator := new(big.Float).Add(preDenominator, amountInWithFee)
 
-	return new(big.Float).Quo(new(big.Float).SetInt(numerator), new(big.Float).SetInt(denominator))
+	return new(big.Float).Quo(numerator, denominator)
 }
 
 func main() {
 	uniswapFactoryAddr := flag.String("factory-addr", UniswapFactoryAddr, "Put address of uniswap factory")
 	inputToken := flag.String("input-token", "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "Put address of input token (default: WETH)")
 	outputToken := flag.String("output-token", "0xdac17f958d2ee523a2206206994597c13d831ec7", "Put address of output token (default: USDT)")
-	inputAmount := flag.Int("input-amount", 1, "Input amount to estimate output price")
+	inputAmount := flag.Float64("input-amount", 1e19, "Input amount to estimate output price")
 	flag.Parse()
 
 	client, err := ethclient.Dial("https://mainnet.infura.io/v3/06eaf9e210cd4587a85c1666dd1b2c17")
@@ -79,5 +79,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(etherToWei(getAmountOut(*inputAmount, reserves.Reserve0, reserves.Reserve1)))
+	fmt.Println(etherToWei(getAmountOut(big.NewFloat(*inputAmount), reserves.Reserve0, reserves.Reserve1)))
 }
